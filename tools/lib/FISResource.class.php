@@ -7,6 +7,7 @@ class FISResource {
 
     private static $arrMap = array();
     private static $arrLoaded = array();
+    private static $arrAsyncDeleted = array();
     /**
      * array(
      *     js: array(), css: array(), script: array(), async: array()
@@ -31,14 +32,15 @@ class FISResource {
     public static $framework = null;
 
     public static $hashTable = array();
-
     public static function reset() {
         self::$arrStaticCollection = array();
         self::$arrRequireAsyncCollection = array();
         self::$arrLoaded = array();
+        self::$arrAsyncDeleted = array();
         self::$arrScriptPool = array();
         self::$arrStylePool = array();
     }
+
 
     public static function addHashTable($hash, $type) {
         if (isset(self::$hashTable[$type])) {
@@ -106,7 +108,7 @@ class FISResource {
     }
 
     public static function addAsync($id, $info, $type) {
-        self::addHashTable($info['hash'], 'async');
+ 		self::addHashTable($info['hash'], 'async');
         if (self::$isInnerWidget) {
             self::$arrWidgetRequireAsync[$type][$id] = $info;
         } else {
@@ -272,33 +274,40 @@ class FISResource {
      * @param $strName
      */
     private static function delAsyncDeps($strName) {
-        $arrRes = self::getAsync($strName, 'res');
-        if ($arrRes['pkg']) {
-            $arrPkg = self::getAsync($arrRes['pkg'], 'pkg');
-            if ($arrPkg) {
-                self::addHashTable($arrPkg['hash'], 'js');
-                self::addStatic($arrPkg['uri'], 'js');
-                self::delAsync($arrRes['pkg'], 'pkg');
-                foreach ($arrPkg['has'] as $strHas) {
-                    if (self::getAsync($strHas, 'res')) {
-                        self::delAsyncDeps($strHas);
+        if (isset(self::$arrAsyncDeleted[$strName])) {
+            return true;
+        } else {
+            self::$arrAsyncDeleted[$strName] = true;
+            $arrRes = self::getAsync($strName, 'res');
+            if ($arrRes['pkg']) {
+                $arrPkg = self::getAsync($arrRes['pkg'], 'pkg');
+                if ($arrPkg) {
+					self::addHashTable($arrPkg['hash'], 'js');
+                    self::addStatic($arrPkg['uri'], 'js');
+                    self::delAsync($arrRes['pkg'], 'pkg');
+                    foreach ($arrPkg['has'] as $strHas) {
+                        self::$arrLoaded[$strHas] = $arrPkg['uri'];
+                        if (self::getAsync($strHas, 'res')) {
+                            self::delAsyncDeps($strHas);
+                        }
                     }
+                } else {
+                    self::delAsync($strName, 'res');
                 }
             } else {
+                //已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
+                $res = self::getAsync($strName, 'res');
+				self::addHashTable($res['hash'], 'js');
+                self::addStatic($res['uri'], 'js');
+                self::$arrLoaded[$strName] = $res['uri'];
                 self::delAsync($strName, 'res');
             }
-        } else {
-            //已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
-            $res = self::getAsync($strName, 'res');
-            self::addHashTable($res['hash'], 'js');
-            self::addStatic($res['uri'], 'js');
-            self::delAsync($strName, 'res');
-        }
-        if ($arrRes['deps']) {
-            foreach ($arrRes['deps'] as $strDep) {
-                //if (isset(self::$arrRequireAsyncCollection['res'][$strDep])) {
-                if (self::getAsync($strDep, 'res')) {
-                    self::delAsyncDeps($strDep);
+            if ($arrRes['deps']) {
+                foreach ($arrRes['deps'] as $strDep) {
+                    //if (isset(self::$arrRequireAsyncCollection['res'][$strDep])) {
+                    if (self::getAsync($strDep, 'res')) {
+                        self::delAsyncDeps($strDep);
+                    }
                 }
             }
         }
