@@ -260,6 +260,10 @@ class FISPagelet {
 	            $timeStamp = time();
 	            $hashStr = '';
 	            foreach (FISResource::$hashTable as $type => $hashs) {
+	            	FISResource::$hashTable[$type] = array_filter(array_unique($hashs));
+	            }
+	            FISResource::$hashTable["async"] = array_diff(FISResource::$hashTable["async"], FISResource::$hashTable["js"]);
+	            foreach (FISResource::$hashTable as $type => $hashs) {
 	            	if(in_array($type, $collectType)){
 	            		$tmpStr = implode(',', $hashs);
 	            		$hashStr .= $tmpStr;
