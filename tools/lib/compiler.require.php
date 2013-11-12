@@ -21,7 +21,7 @@ function smarty_compiler_require($arrParams,  $smarty){
         $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/lib/FISPagelet.class.php');
         $strCode .= '<?php if(!class_exists(\'FISPagelet\', false)){require_once(\'' . $strResourceApiPath . '\');}';
         $strCode .= 'FISPagelet::load(' . $strName . ',$_smarty_tpl->smarty,'.$strAsync.');';
-        $strCode .= 'FISPagelet::addHashTable(' . $strName . ');';
+        $strCode .= 'FISPagelet::addHashTable(' . $strName . ',$_smarty_tpl->smarty);';
         $strCode .= '?>';
     }
     return $strCode;

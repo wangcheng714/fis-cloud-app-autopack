@@ -66,8 +66,8 @@ class FISPagelet {
     static private $fid;
     static private $usedStatics = array();
 
-    static public function addHashTable($strId){
-    	$staticInfo = FISResource::getStaticInfo($strId);
+    static public function addHashTable($strId, $smarty){
+    	$staticInfo = FISResource::getStaticInfo($strId, $smarty);
     	self::$usedStatics[]  = $staticInfo['hash'];
     }
 
