@@ -218,6 +218,11 @@ class FISResource {
     }
 
     public static function getUri($strName, $smarty) {
+        $infos = self::getStaticInfo($strName, $smarty);
+        return $infos['uri'];
+    }
+
+	public static function getStaticInfo($strName, $smarty) {
         $intPos = strpos($strName, ':');
         if($intPos === false){
             $strNamespace = '__global__';
@@ -228,7 +233,7 @@ class FISResource {
             $arrMap = &self::$arrMap[$strNamespace];
             $arrRes = &$arrMap['res'][$strName];
             if (isset($arrRes)) {
-                return $arrRes['uri'];
+                return $arrRes;
             }
         }
     }

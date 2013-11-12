@@ -1,15 +1,5 @@
 var BigPipe = function() {
-
-    var pagelets = [],
-        container,
-        containerId,
-        onReady;
-
-    function parseJSON (json) {
-        return window.JSON? JSON.parse(json) : eval('(' + json + ')');
-    }
-
-
+    var idMaps = {};
     function ajax(url, cb, data) {
         var xhr = new (window.XMLHttpRequest || ActiveXObject)("Microsoft.XMLHTTP");
 
@@ -18,7 +8,7 @@ var BigPipe = function() {
                 cb(this.responseText);
             }
         };
-        xhr.open(data?'POST':'GET', url + '&t=' + ~~(Math.random() * 1e6), true);
+        xhr.open(data?'POST':'GET', url + '&t=' + ~~(1e6 * Math.random()), true);
 
         if (data) {
             xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -27,20 +17,6 @@ var BigPipe = function() {
         xhr.send(data);
     }
 
-    function getCommentById(html_id) {
-        //
-        // 取出html_id元素内保存的注释内容
-        //
-        var dom = document.getElementById(html_id);
-        if (!dom) {
-            throw Error('[BigPipe] Cannot find comment `' + html_id + '`');
-        }
-        var html = dom.firstChild.nodeValue;
-        html = html.substring(1, html.length - 1).
-            replace(/\\([\s\S]|$)/g,'$1');
-        dom.parentNode.removeChild(dom);
-        return html;
-    }
 
     function renderPagelet(obj, pageletsMap, rendered) {
         if (obj.id in rendered) {
@@ -57,27 +33,35 @@ var BigPipe = function() {
         // 将pagelet填充到对应的DOM里
         //
         var dom = document.getElementById(obj.id);
+        var idMap = idMaps[obj.id];
+        if (idMap && idMap.html_id) {
+            dom = document.getElementById(idMap.html_id);
+        }
+
         if (!dom) {
             dom = document.createElement('div');
             dom.id = obj.id;
-            if (container) {
-                container.appendChild(dom);
-            } else {
-                document.body.appendChild(dom);
-            }
+            document.body.appendChild(dom);
         }
 
-        dom.innerHTML = obj.html || getCommentById(obj.html_id);
+        dom.innerHTML = obj.html;
+
+        var scriptText = dom.getElementsByTagName('script');
+        for (var i = scriptText.length - 1; i >= 0; i--) {
+            node = scriptText[i];
+            text = node.text || node.textContent || node.innerHTML || "";
+            window[ "eval" ].call( window, text );
+        };
     }
 
 
-    function render() {
+    function render(pagelets) {
         var i, n = pagelets.length;
         var pageletsMap = {};
         var rendered = {};
 
         //
-        // pagelet.id => pagelet 映射表
+        // 初始化 pagelet.id => pagelet 映射表
         //
         for(i = 0; i < n; i++) {
             var obj = pagelets[i];
@@ -90,7 +74,9 @@ var BigPipe = function() {
     }
 
 
-    function process(rm, cb) {
+    function process(data) {
+        var rm = data.resource_map;
+
         if (rm.async) {
             require.resourceMap(rm.async);
         }
@@ -101,8 +87,7 @@ var BigPipe = function() {
                 dom.innerHTML = rm.style;
                 document.getElementsByTagName('head')[0].appendChild(dom);
             }
-
-            cb();
+            render(data.pagelets);
 
             if (rm.js) {
                 LazyLoad.js(rm.js, function() {
@@ -115,146 +100,50 @@ var BigPipe = function() {
         }
 
         rm.css
-            ? LazyLoad.css(rm.css.reverse(), loadNext)
+            ? LazyLoad.css(rm.css, loadNext)
             : loadNext();
     }
 
-    function init(arg) {
 
-    }
-
-    /**
-     *
-     */
-    function register(obj) {
-        process(obj, function() {
-            render();
-            onReady();
-        });
-    }
-
-    function fetch(url, id) {
-        //
-        // Quickling请求局部
-        //
-        containerId = id;
-        ajax(url, function(data) {
-            if (id == containerId) {
-                var json = parseJSON(data);
-                onPagelets(json, id);
+    function asyncLoad(arg, param) {
+        if (!(arg instanceof Array)) {
+            arg = [arg];
+        }
+        var obj, arr = [];
+        for (var i = arg.length - 1; i >= 0; i--) {
+            obj = arg[i];
+            if (!obj.id) {
+                throw new Error('missing pagelet id');
             }
-        });
-    }
 
-    function refresh(url, id) {
-        fetch(url, id);
-    }
-
-    /**
-     * 异步加载pagelets
-     */
-    function asyncLoad(pageletIDs) {
-        if (!(pageletIDs instanceof Array)) {
-            pageletIDs = [pageletIDs];
+            idMaps[obj.id] = obj;
+            arr.push('pagelets[]=' + obj.id);
         }
 
-        var i, args = [];
-        for(i = pageletIDs.length - 1; i >= 0; i--) {
-            var id = pageletIDs[i].id;
-            if (!id) {
-                throw Error('[BigPipe] missing pagelet id');
-            }
-            args.push('pagelets[]=' + id);
-        }
+        var url = location.href.split('#')[0] + '?' + arr.join('&') + '&fis_widget=true' + '&' + param;
 
-        var url = location.href.split('#')[0] +
-            (location.search? '&' : '?') + "fis_widget=true&" + args.join('&');
-
-
-
-        // 异步请求pagelets
         ajax(url, function(res) {
-            var data = parseJSON(res);
-            pagelets = data.pagelets;
-            process(data.resource_map, function() {
-                render();
-            });
+            var data = window.JSON?
+                JSON.parse(res) :
+                eval('(' + res + ')');
+
+            process(data);
         });
     }
-
-    /**
-     * 添加一个pagelet到缓冲队列
-     */
-    function onPageletArrived(obj) {
-        pagelets.push(obj);
-    }
-
-    function onPagelets(obj, id) {
-        //
-        // Quickling请求响应
-        //
-        if (obj.title) {
-            document.title = obj.title;
-        }
-
-        //
-        // 清空需要填充的DOM容器
-        //
-        container = document.getElementById(id);
-        container.innerHTML = '';
-        pagelets = obj.pagelets;
-
-        process(obj.resource_map, function() {
-            render();
-        });
-    }
-
-    function onPageReady(f) {
-        onReady = f;
-    }
-
-    function onPageChange(pid) {
-        fetch(location.pathname +
-            (location.search? location.search + '&' : '?') + 'pagelets=' + pid);
-    }
-
-
-    // -------------------- 事件队列 --------------------
-    var SLICE = [].slice;
-    var events = {};
-
-    function trigger(type /* args... */) {
-        var list = events[type];
-        if (!list) {
-            return;
-        }
-
-        var arg = SLICE.call(arguments, 1);
-        for(var i = 0, j = list.length; i < j; i++) {
-            var cb = list[i];
-            if (cb.f.apply(cb.o, arg) === false) {
-                break;
-            }
-        }
-    }
-
-    function on(type, listener, context) {
-        var queue = events[type] || (events[type] = []);
-        queue.push({f: listener, o: context});
-    }
-
 
     return {
-        init: init,
-        asyncLoad: asyncLoad,
-        register: register,
-        refresh: refresh,
-
-        onPageReady: onPageReady,
-        onPageChange: onPageChange,
-
-        onPageletArrived: onPageletArrived,
-        onPagelets: onPagelets,
-        on: on
+        asyncLoad: asyncLoad
     }
 }();
+
+
+//test +lazyload.js
+//document.write('<script src="lazyload.js"></script>');
+
+//test 执行textarea的内容
+/*window.onload = function() {
+    var els = document.getElementsByClassName('g_fis_bigrender');
+    for(var i = 0; i < els.length; i++) {
+        window.eval(els[i].value);
+    }
+}*/

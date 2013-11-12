@@ -60,6 +60,21 @@ class FISPagelet {
     static public $cp;
     static public $arrEmbeded = array();
 
+    
+    //auto package
+    static private $sampleRate = 1;
+    static private $fid;
+    static private $usedStatics = array();
+
+    static public function addHashTable($strId){
+    	$staticInfo = FISResource::getStaticInfo($strId);
+    	self::$usedStatics[]  = $staticInfo['hash'];
+    }
+
+    static public function getUsedStatics(){
+    	return self::$usedStatics;
+    }
+
     static public function init() {
         self::$default_mode = self::MODE_NOSCRIPT;
         if ($_GET['force_mode']) {
@@ -286,6 +301,45 @@ class FISPagelet {
         return $ret;
     }
 
+	static private function isSample($sample){
+        $tmp_sample = rand(1, 10000) / 10000;
+        return $sample >= $tmp_sample;
+    }
+
+    static private function getCountUrl(){
+    	$code = "";
+    	$sampleRate = self::getSampleRate();
+    	if(self::isSample($sampleRate)){
+    		$fid = self::getFid();
+	    	if (!empty(self::$usedStatics)) {
+	            $timeStamp = time();
+	            $hashStr = '';
+	            self::$usedStatics= array_filter(array_unique(self::$usedStatics));
+	            $tmpStr = implode(',', self::$usedStatics);
+				$hashStr .= $tmpStr;
+				$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . '&sid=' . $timeStamp . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
+	            $code = str_replace("<STATIC_HASH>", substr(md5($hashStr), 0, 10), $code);
+	        }
+    	}
+        return $code;
+    }
+
+    static public function setFid($fid){
+    	self::$fid = $fid;
+    }
+
+    static public function setSampleRate($rate){
+    	self::$sampleRate = $rate;
+    }
+
+    static public function getFid(){
+    	return self::$fid;
+    }
+
+    static public function getSampleRate(){
+    	return self::$sampleRate;
+    }
+
     /**
      * 渲染静态资源
      * @param $html
@@ -318,6 +372,16 @@ class FISPagelet {
                 }
                 $code .= '</script>';
             }
+
+			//
+            // auto pack
+            //
+
+            $jsCode = self::getCountUrl();
+            if($jsCode != ""){
+            	$code .=  '<script type="text/javascript">' . $jsCode . '</script>';
+            }
+
             $html = str_replace(self::JS_SCRIPT_HOOK, $code . self::JS_SCRIPT_HOOK, $html);
             $code = '';
             if (!empty($arr['css'])) {
@@ -419,6 +483,11 @@ class FISPagelet {
                 }
                 if ($res['style']) {
                     $res['style'] = implode("\n", $res['style']);
+                }
+                //auto pack
+				$jsCode = self::getCountUrl();
+                if($jsCode != "" && !$_GET['fis_widget']){
+                	$res['script'] = $res['script'] ? $res['script'] . $jsCode : $jsCode;
                 }
                 $html = json_encode(array(
                     'title' => '',
