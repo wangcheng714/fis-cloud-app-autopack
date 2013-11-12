@@ -30,8 +30,7 @@ function smarty_compiler_widget($arrParams,  $smarty){
         $strCode .= '}else{';
     }
     if($strName){
-        $strCode .= '$hit = FISPagelet::start(' . $strPageletId . ', ' . $strMode . ',' .$strGroup.');';
-        $strCode .= 'FISPagelet::addHashTable(' . $strName . ');'
+        $strCode .= '$hit = FISPagelet::start(' . $strPageletId . ', ' . $strMode . ');';
         $strCode .= ' if ($hit) {';
         $strCode .= '$_tpl_path=FISPagelet::getUri(' . $strName . ',$_smarty_tpl->smarty);';
         $strCode .= 'if(isset($_tpl_path)){';

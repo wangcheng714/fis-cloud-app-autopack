@@ -120,7 +120,7 @@ var BigPipe = function() {
             arr.push('pagelets[]=' + obj.id);
         }
 
-        var url = location.href.split('#')[0] + '&' + arr.join('&') + '&fis_widget=true' + '&' + param;
+        var url = location.href.split('#')[0] + '&' + arr.join('&') + '&force_mode=1&is_widget=true' + '&' + param;
 
         ajax(url, function(res) {
             var data = window.JSON?

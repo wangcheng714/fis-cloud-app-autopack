@@ -26,16 +26,26 @@ class FISPagelet {
         array(),
         array()
     );
+    /**
+     * array(
+     *     js: array(), css: array(), script: array(), async: array()
+     * )
+     * @var array
+     */
+    static private $_collection = array();
     static private $_session_id = 0;
     static private $_context = array();
     static private $_contextMap = array();
     static private $_pagelets = array();
     static private $_title = '';
+    static private $_widget_html = array();
     /**
      * 解析模式
      * @var number
      */
     static protected $mode = null;
+
+    static protected $force_mode = null;
 
     static protected $default_mode = null;
 
@@ -50,17 +60,34 @@ class FISPagelet {
     static public $cp;
     static public $arrEmbeded = array();
 
-	//auto package
+    
+    //auto package
     static private $sampleRate = 1;
     static private $fid;
+    static private $usedStatics = array();
+
+    static public function addHashTable($strId){
+    	$staticInfo = FISResource::getStaticInfo($strId);
+    	self::$usedStatics[]  = $staticInfo['hash'];
+    }
+
+    static public function getUsedStatics(){
+    	return self::$usedStatics;
+    }
+
     static public function init() {
-        self::$default_mode = self::MODE_NOSCRIPT;//self::$default_mode = self::MODE_BIGPIPE;
-        $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-            && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
-        if ($is_ajax) {
-            self::setMode(self::MODE_QUICKLING);
-        } else {
+        self::$default_mode = self::MODE_NOSCRIPT;
+        if ($_GET['force_mode']) {
+            self::$force_mode = $_GET['force_mode'];
             self::setMode(self::$default_mode);
+        } else {
+            $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
+                && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+            if ($is_ajax) {
+                self::setMode(self::MODE_QUICKLING);
+            } else {
+                self::setMode(self::$default_mode);
+            }
         }
         self::setFilter($_GET['pagelets']);
     }
@@ -78,10 +105,6 @@ class FISPagelet {
         foreach ($ids as $id) {
             self::$filter[$id] = true;
         }
-    }
-
-    static public function setTitle($title) {
-        self::$_title = $title;
     }
 
     static public function getUri($strName, $smarty) {
@@ -109,7 +132,7 @@ class FISPagelet {
     }
 
     static function load($str_name, $smarty, $async = false) {
-        if(self::$_context['hit'] || self::$mode == self::$default_mode){
+        if(self::$_context['hit'] || self::$mode == self::MODE_NOSCRIPT){
             FISResource::load($str_name, $smarty, $async);
         }
     }
@@ -143,37 +166,38 @@ class FISPagelet {
         if ($mode !== null) {
             $special_flag = true;
         }
-
-        if ($mode) {
-            self::$widget_mode = self::_parseMode($mode);
+        if ($mode === null || $has_parent) {
+            if (!$has_parent) {
+                self::$widget_mode = self::$mode;
+            }
         } else {
-            self::$widget_mode = self::$mode;
+            self::$widget_mode = self::_parseMode($mode);
         }
-
-        $parent_id = $has_parent ? self::$_context['id'] : '';
-        $id = empty($id) ? '__elm_' . $parent_id . '_' . self::$_session_id ++ : $id;
-
+        $parent_id = $has_parent ? self::$_context['parent_id'] : '';
+        $qk_flag = (self::$force_mode == self::MODE_QUICKLING) ? '_qk_' : '';
+        $id = empty($id) ? '__elm_' . $parent_id . '_' . $qk_flag . self::$_session_id ++ : $id;
         //widget是否命中，默认命中
         $hit = true;
-
         switch(self::$widget_mode) {
             case self::MODE_NOSCRIPT:
-                echo '<div id="' . $id . '">';
+                if(empty($id)){
+                    echo '<div>';
+                } else {
+                    echo '<div id="' . $id . '">';
+                }
                 break;
             case self::MODE_QUICKLING:
                 $hit = self::$filter[$id];
-            case self::MODE_BIGPIPE:
-                $context = array( 'id' => $id, 'async' => false);
                 //widget调用时mode='quickling'，so，打出异步加载代码
-                if ($special_flag && !$hit) {
-                    echo '<textarea class="g_fis_bigrender" style="visibility: hidden;">'
+                if ($special_flag && !$has_parent) {
+                    echo '<textarea class="g_fis_bigrender" style="display: none;">'
                         .'BigPipe.asyncLoad({id: "'.$id.'"});'
                         .'</textarea>';
-                    $context['async'] = true;
                 }
-
+            case self::MODE_BIGPIPE:
+                $context = array( 'id' => $id );
                 $parent = self::$_context;
-                if(!empty($parent)) {
+                if(!empty($parent)){
                     $parent_id = $parent['id'];
                     self::$_contextMap[$parent_id] = $parent;
                     $context['parent_id'] = $parent_id;
@@ -184,8 +208,6 @@ class FISPagelet {
                     }
                 }
                 $context['hit'] = $hit;
-
-
                 self::$_context = $context;
 
                 if (empty($parent) && $hit) {
@@ -193,11 +215,12 @@ class FISPagelet {
                 } else if (!empty($parent) && !$parent['hit'] && $hit) {
                     FISResource::widgetStart();
                 }
+
                 echo '<div id="' . $id . '">';
                 ob_start();
                 break;
         }
-        return $hit; //return true;
+        return $hit;
     }
 
     /**
@@ -206,6 +229,7 @@ class FISPagelet {
      */
     static public function end() {
         $ret = true;
+        $html = '';
         if (self::$widget_mode !== self::MODE_NOSCRIPT) {
             $html = ob_get_clean();
             $pagelet = self::$_context;
@@ -214,7 +238,6 @@ class FISPagelet {
                 $parent = self::$_contextMap[$pagelet['parent_id']];
                 if (!$parent['hit'] && $pagelet['hit']) {
                     self::$inner_widget[self::$widget_mode][] = FISResource::widgetEnd();
-
                 }
             } else {
                 if ($pagelet['hit']) {
@@ -222,24 +245,32 @@ class FISPagelet {
                 }
             }
 
-            if($pagelet['hit'] && !$pagelet['async']){
-                unset($pagelet['hit']);
-                unset($pagelet['async']);
-                $pagelet['html'] = $html;
-                self::$_pagelets[] = &$pagelet;
-                unset($pagelet);
+            if($pagelet['hit']){
+                if (self::$force_mode) {
+                    if (self::$force_mode == self::$widget_mode) {
+                        unset($pagelet['hit']);
+                        $pagelet['html'] = $html;
+                        self::$_pagelets[] = &$pagelet;
+                        unset($pagelet);
+                    }
+                } else {
+                    unset($pagelet['hit']);
+                    $pagelet['html'] = $html;
+                    self::$_pagelets[] = &$pagelet;
+                    unset($pagelet);
+                }
+
             } else {
                 $ret = false;
             }
             $parent_id = self::$_context['parent_id'];
             if(isset($parent_id)){
-
                 self::$_context = self::$_contextMap[$parent_id];
                 unset(self::$_contextMap[$parent_id]);
             } else {
                 self::$_context = null;
             }
-            self::$widget_mode = self::$mode;
+            //收集
         }
         echo '</div>';
         return $ret;
@@ -255,21 +286,13 @@ class FISPagelet {
     	$sampleRate = self::getSampleRate();
     	if(self::isSample($sampleRate)){
     		$fid = self::getFid();
-	    	if (!empty(FISResource::$hashTable)) {
-	            $collectType = array("js", "css", "async");
+	    	if (!empty(self::$usedStatics)) {
 	            $timeStamp = time();
 	            $hashStr = '';
-	            foreach (FISResource::$hashTable as $type => $hashs) {
-	            	FISResource::$hashTable[$type] = array_filter(array_unique($hashs));
-	            }
-	            FISResource::$hashTable["async"] = array_diff(FISResource::$hashTable["async"], FISResource::$hashTable["js"]);
-	            foreach (FISResource::$hashTable as $type => $hashs) {
-	            	if(in_array($type, $collectType) && count($hashs) > 0){
-	            		$tmpStr = implode(',', $hashs);
-	            		$hashStr .= $tmpStr;
-	                	$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . '&sid=' . $timeStamp . '&type=' . $type . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
-	            	}
-	            }
+	            self::$usedStatics= array_filter(array_unique(self::$usedStatics));
+	            $tmpStr = implode(',', self::$usedStatics);
+				$hashStr .= $tmpStr;
+				$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . '&sid=' . $timeStamp . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
 	            $code = str_replace("<STATIC_HASH>", substr(md5($hashStr), 0, 10), $code);
 	        }
     	}
@@ -291,6 +314,7 @@ class FISPagelet {
     static public function getSampleRate(){
     	return self::$sampleRate;
     }
+
     /**
      * 渲染静态资源
      * @param $html
@@ -323,12 +347,14 @@ class FISPagelet {
                 }
                 $code .= '</script>';
             }
+
 			//
             // auto pack
             //
+
             $jsCode = self::getCountUrl();
             if($jsCode != ""){
-            	$code .=  '<script type="text/javascript">' . self::getCountUrl() . '</script>';
+            	$code .=  '<script type="text/javascript">' . $jsCode . '</script>';
             }
 
             $html = str_replace(self::JS_SCRIPT_HOOK, $code . self::JS_SCRIPT_HOOK, $html);
@@ -355,7 +381,7 @@ class FISPagelet {
     }
     static public function display($html) {
         $pagelets = self::$_pagelets;
-        $mode = self::$mode;
+        $mode = self::$force_mode ? self::$force_mode : self::$mode;
         $res = array(
             'js' => array(),
             'css' => array(),
@@ -372,7 +398,7 @@ class FISPagelet {
                 if (isset($item[$key]) && is_array($item[$key])) {
                     if ($key != 'async') {
                         $arr = array_merge($res[$key], $item[$key]);
-                        $arr = array_merge(array_unique($arr));
+                        $arr = array_unique($arr);
                     } else {
                         $arr = array(
                             'res' => array_merge($res['async']['res'], (array)$item['async']['res']),
@@ -391,6 +417,7 @@ class FISPagelet {
             }
         }
         //}}}
+
         //tpl信息没有必要打到页面
         switch($mode) {
             case self::MODE_NOSCRIPT:
@@ -410,40 +437,36 @@ class FISPagelet {
                 if ($res['style']) {
                     $res['style'] = implode("\n", $res['style']);
                 }
-				//auto pack
+                //auto pack
 				$jsCode = self::getCountUrl();
                 if($jsCode != "" && !$_GET['fis_widget']){
                 	$res['script'] = $res['script'] ? $res['script'] . $jsCode : $jsCode;
                 }
                 $html = json_encode(array(
-                    'title' => self::$_title,
+                    'title' => '',
                     'pagelets' => $pagelets,
                     'resource_map' => $res
                 ));
                 break;
             case self::MODE_BIGPIPE:
                 $external = FISResource::getArrStaticCollection();
-                $page_script = $external['script'];
-                unset($external['script']);
                 $html = self::renderStatic(
                     $html,
                     $external,
                     true
                 );
-                $html .= "\n";
                 $html .= '<script type="text/javascript">';
-                $html .= 'BigPipe.onPageReady(function() {';
-                $html .= implode("\n", $page_script);
-                $html .= '});';
-                $html .= '</script>';
                 $html .= "\n";
-
-                if ($res['script']) {
-                    $res['script'] = implode("\n", $res['script']);
+                if(isset($res['script'])){
+                    $html .= 'BigPipe.onPageReady(function(){';
+                    if(isset($res['script'])){
+                        $html .= "\n";
+                        $html .= implode("\n", $res['script']);
+                    }
+                    $html .= '});';
+                    unset($res['script']);
                 }
-                if ($res['style']) {
-                    $res['style'] = implode("\n", $res['style']);
-                }
+                $html .= '</script>';
                 $html .= "\n";
                 foreach($pagelets as $index => $pagelet){
                     $id = '__cnt_' . $index;
@@ -466,6 +489,8 @@ class FISPagelet {
                     $html .= '</script>';
                     $html .= "\n";
                 }
+                $html .= "\n";
+                $html .= '</script>';
                 $html .= '<script type="text/javascript">';
                 $html .= "\n";
                 $html .= 'BigPipe.register(';
