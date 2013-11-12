@@ -264,7 +264,7 @@ class FISPagelet {
 	            }
 	            FISResource::$hashTable["async"] = array_diff(FISResource::$hashTable["async"], FISResource::$hashTable["js"]);
 	            foreach (FISResource::$hashTable as $type => $hashs) {
-	            	if(in_array($type, $collectType)){
+	            	if(in_array($type, $collectType) && count($hashs) > 0){
 	            		$tmpStr = implode(',', $hashs);
 	            		$hashStr .= $tmpStr;
 	                	$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . '&sid=' . $timeStamp . '&type=' . $type . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
