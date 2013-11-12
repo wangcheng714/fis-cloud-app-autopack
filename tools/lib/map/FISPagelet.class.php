@@ -54,7 +54,7 @@ class FISPagelet {
     static private $sampleRate = 1;
     static private $fid;
     static public function init() {
-        self::$default_mode = self::MODE_BIGPIPE;//self::$default_mode = self::MODE_NOSCRIPT;
+        self::$default_mode = self::MODE_NOSCRIPT;//self::$default_mode = self::MODE_BIGPIPE;
         $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
             && (strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
         if ($is_ajax) {
@@ -197,7 +197,7 @@ class FISPagelet {
                 ob_start();
                 break;
         }
-        return true; //return $hit;
+        return $hit; //return true;
     }
 
     /**
