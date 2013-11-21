@@ -73,17 +73,43 @@
 
             pid : fis在log平台的id
             sid ： 类似与sessionId的作用，目前是一额随机数，防止url请求被缓存
-            data ： 经过压缩后的静态资源数据
+            data ： 经过压缩后的使用的资源数据
             v : 代表请求个数的版本号，防止以后请求升级，保持向下兼容使用
-            hash : 页面所有的静态资源的hash值，代表使用一组特定静态资源的url   确定如何生成该hash?
-            fid : 产品线在fis中的id，用来区分不同的产品线， (该属性可能会这hunter使用相同的id)
-            type : css\js\asyn
+            hash : 页面使用资源的hash值，代表使用一组特定静态资源的url
+            fid : 产品线在fis中的id，用来区分不同的产品线
 
     3) log平台每天定时执行数据分析，切割脚本，生成分析后的格式化数据日志
 
-            Log平台添加每天定时统计任务，解析apache的access日志。分析前端收集到的信息，写入log文件中。文件格式：
+            Log平台添加每天定时统计任务，解析apache的access日志。分析前端收集到的信息，写入log文件中。
 
-                fid  hash 静态资源  type pv url
+            Log日志格式 ：
+
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060&sid=1384318521&hash=7aae443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+
+            构造数据 ：
+
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060&sid=1384318521&hash=7aae443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060&sid=1384318521&hash=7aae443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060&sid=1384318521&hash=7aae443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060&sid=1384318521&hash=7aae443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0&sid=1384318521&hash=7bbe443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0&sid=1384318521&hash=7bbe443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,c686cc0&sid=1384318521&hash=7bbe443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,f2b7060&sid=1384318521&hash=7cce443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+                127.0.0.1 - - [13/Nov/2013:12:55:21 +0800] "GET /u.gif?pid=242&v=1&data=b458ed2,d049ab8,f2b7060&sid=1384318521&hash=7cce443f20&fid=async_demo HTTP/1.1" 200 2326 "http://127.0.0.1:8080/pagelet/page/index" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36"
+
+
+            文件格式：
+
+                fid  hash 使用资源 pv url
+
+            示例：
+
+                async_demo 7aae443f20 b458ed2,d049ab8,c686cc0,b75a9d7,76ef4ed,f2b7060 4 http://127.0.0.1:8080/pagelet/page/index
+                async_demo 7bbe443f20 b458ed2,d049ab8,c686cc0 3 http://127.0.0.1:8080/pagelet/page/index
+                async_demo 7cce443f20 b458ed2,d049ab8,f2b7060 2 http://127.0.0.1:8080/pagelet/page/index
 
 
 ### 资源打包计算

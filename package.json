@@ -1,0 +1,22 @@
+{
+  "name": "fis-cloud-app-autopack",
+  "version": "0.0.1",
+  "description": "fis-cloud-app-autopack",
+  "main": "fis-cloud-app-autopack.js",
+  "dependencies": {
+    "request" : "2.27.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fis",
+    "fis-cloud-app",
+    "fis-cloud-app-autopack"
+  ],
+  "author": {
+    "name": "fis-team"
+  },
+  "license": "BSD",
+  "readme": "This file was created by JetBrains PhpStorm 6.0 for binding GitHub repository"
+}
