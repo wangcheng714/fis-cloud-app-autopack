@@ -18,67 +18,67 @@ common_sync_css
 	common:widget/topbanner/topbanner.inline.less	0
 	common:widget/traffictitle/traffictitle.inline.less	0
 common_sync_js
-	common:widget/geolocation/geolocation.js	1048918
-	common:static/js/BigPipe.js	1048918
-	common:static/js/lazyload.js	1048918
-	common:static/js/localstorage.js	1048918
-	common:widget/statistics/statistics.js	1048918
-	common:widget/stat/stat.js	1048918
-	common:widget/stat/metrics-stat.js	1048918
-	common:widget/monitor/monitor.js	1048918
-	common:widget/geolocation/urlgeolocation.js	1048918
-	common:widget/geolocation/sharegeolocation.js	1048918
-	common:widget/geolocation/preciseipgeolocation.js	1048918
-	common:static/js/util.js	1048918
-	common:widget/geolocation/nativegeolocation.js	1048918
-	common:static/js/zepto.js	1048918
-	common:widget/geolocation/myposition.js	1048918
-	common:widget/appresize/appresize.js	1048918
-	common:widget/backtop/backtop.js	1048918
-	common:widget/geolocation/location.js	1048918
-	common:widget/broadcaster/broadcaster.js	1048918
-	common:widget/cookie/cookie.js	1048918
-	common:widget/geolocation/initgeo.js	1048918
-	common:widget/geolocation/html5geolocation.js	1048918
-	common:widget/fastclick/fastclick.js	1048918
-	common:widget/url/url.js	1048918
-	common:widget/footer/footer.js	1045355
-	common:widget/md5/md5.js	1045355
-	common:widget/login/login.js	1045355
-	common:widget/apphistory/apphistory.js	1018416
-	common:widget/bottombanner/bottombanner.js	929734
-	common:widget/nav/nav.js	902809
-	common:widget/topbanner/topbanner.js	569838
-	common:widget/popup/popup.js	361386
-	common:static/js/widget.js	211164
-	common:widget/suggestion/suggestion.js	211164
-	common:widget/quickdelete/quickdelete.js	211164
-	common:static/js/searchdata.js	127517
-	common:widget/sharefriends/sharefriends.js	121299
-	common:widget/header/header.js	115607
-	common:widget/cover/cover.js	115607
-	common:widget/search/poisearch.js	115607
-	common:static/js/iscroll.js	114443
-	common:widget/datescrollpick/datescrollpicker.js	91096
-	common:widget/datepicker/datepicker.js	34199
-	common:widget/setcity/setcity.js	13601
-	common:static/js/map/custommarker.js	2202
-	common:static/js/map/api.js	2202
-	common:widget/streetview/streetview.js	2202
-	common:static/js/pdc/pdc.js	0
+	common:widget/geolocation/geolocation.js	0
+	common:static/js/BigPipe.js	0
+	common:static/js/lazyload.js	0
+	common:static/js/localstorage.js	0
+	common:static/js/map/api.js	0
+	common:static/js/map/custommarker.js	0
 	common:static/js/mod.js	0
-	common:static/js/pdc/vt.js	0
 	common:static/js/pdc/pda.js	0
+	common:static/js/pdc/pdc.js	0
+	common:static/js/pdc/vt.js	0
+	common:static/js/searchdata.js	0
+	common:static/js/util.js	0
+	common:static/js/widget.js	0
+	common:static/js/zepto.js	0
+	common:widget/apphistory/apphistory.js	0
+	common:widget/appresize/appresize.js	0
+	common:widget/backtop/backtop.js	0
+	common:widget/bottombanner/bottombanner.js	0
+	common:widget/broadcaster/broadcaster.js	0
+	common:widget/cookie/cookie.js	0
+	common:widget/cover/cover.js	0
+	common:widget/datepicker/datepicker.js	0
+	common:widget/datescrollpick/datescrollpicker.js	0
+	common:widget/fastclick/fastclick.js	0
+	common:widget/footer/footer.js	0
+	common:static/js/iscroll.js	0
+	common:widget/geolocation/html5geolocation.js	0
+	common:widget/geolocation/initgeo.js	0
+	common:widget/geolocation/location.js	0
+	common:widget/geolocation/myposition.js	0
+	common:widget/geolocation/nativegeolocation.js	0
+	common:widget/geolocation/preciseipgeolocation.js	0
+	common:widget/geolocation/sharegeolocation.js	0
+	common:widget/geolocation/urlgeolocation.js	0
+	common:widget/header/header.js	0
+	common:widget/login/login.js	0
+	common:widget/md5/md5.js	0
+	common:widget/monitor/monitor.js	0
+	common:widget/nav/nav.js	0
+	common:widget/popup/popup.js	0
+	common:widget/quickdelete/quickdelete.js	0
+	common:widget/search/poisearch.js	0
+	common:widget/setcity/setcity.js	0
+	common:widget/sharefriends/sharefriends.js	0
+	common:widget/stat/metrics-stat.js	0
+	common:widget/stat/stat.js	0
+	common:widget/statistics/statistics.js	0
+	common:widget/streetview/streetview.js	0
+	common:widget/suggestion/suggestion.js	0
+	common:widget/topbanner/topbanner.js	0
+	common:widget/url/url.js	0
 drive_sync_css
 	drive:widget/list/list.inline.less	0
 	drive:widget/navi/navi.inline.less	0
 drive_sync_js
-	drive:widget/navi/navi.js	28536
-	drive:widget/navi/navibox.js	28536
+	drive:widget/navi/navi.js	0
+	drive:widget/navi/navibox.js	0
 feedback_sync_css
 	feedback:widget/show/show.inline.css	0
 feedback_sync_js
-	feedback:widget/show/show.js	1557
+	feedback:widget/show/show.js	0
 index_sync_css
 	index:widget/morecategory/morecategory.inline.less	0
 	index:static/css/hao123.inline.less	0
@@ -113,34 +113,34 @@ index_sync_css
 	index:widget/thumbnail/thumbnail.inline.less	0
 	index:widget/waitforloc/waitforloc.inline.less	0
 index_sync_js
-	index:widget/helper/helper.js	126244
-	index:widget/nearby/nearby.js	126244
-	index:widget/thumbnail/userheading.js	115610
-	index:widget/thumbnail/thumbnail.js	115610
-	index:widget/surface/surface.js	115607
-	index:widget/searchbox/searchbox.js	115607
-	index:widget/helper/revert.js	115607
-	index:widget/addestop/addestop.js	115607
-	index:widget/seacrhnave/searchboxmodel.js	95557
-	index:widget/seacrhnave/seacrhnave.js	95557
-	index:widget/nbserachbox/nbserachbox.js	51318
-	index:widget/morecategory/morecategory.js	45517
-	index:widget/navebox/navebox.js	30480
-	index:widget/locsearch/locsearch.js	11092
-	index:widget/allcity/allcity.js	10876
-	index:widget/hotcity/hotcity.js	10876
-	index:widget/error/error.js	10807
-	index:widget/curloc/curloc.js	9819
-	index:widget/nearpush/hotel.js	4836
-	index:widget/nearpush/cater.js	4836
-	index:widget/nearpush/bank.js	4836
-	index:widget/sventry/sventry.js	2506
-	index:widget/businesslist/businesslist.js	1273
+	index:widget/navebox/navebox.js	0
+	index:static/js/recorder.js	0
+	index:widget/allcity/allcity.js	0
+	index:widget/bizarea/bizarea.js	0
+	index:widget/businesslist/businesslist.js	0
 	index:widget/bussinesslist/bussinesslist.js	0
 	index:widget/cateinfo/cateinfo.js	0
+	index:widget/curloc/curloc.js	0
+	index:widget/error/error.js	0
+	index:widget/helper/helper.js	0
+	index:widget/helper/revert.js	0
+	index:widget/hotcity/hotcity.js	0
+	index:widget/locsearch/locsearch.js	0
+	index:widget/morecategory/morecategory.js	0
+	index:widget/addestop/addestop.js	0
 	index:widget/navethumbnail/navethumbnail.js	0
-	index:widget/bizarea/bizarea.js	0
-	index:static/js/recorder.js	0
+	index:widget/nbserachbox/nbserachbox.js	0
+	index:widget/nearby/nearby.js	0
+	index:widget/nearpush/bank.js	0
+	index:widget/nearpush/cater.js	0
+	index:widget/nearpush/hotel.js	0
+	index:widget/seacrhnave/seacrhnave.js	0
+	index:widget/seacrhnave/searchboxmodel.js	0
+	index:widget/searchbox/searchbox.js	0
+	index:widget/surface/surface.js	0
+	index:widget/sventry/sventry.js	0
+	index:widget/thumbnail/thumbnail.js	0
+	index:widget/thumbnail/userheading.js	0
 	index:widget/waitforloc/waitforloc.js	0
 place_sync_css
 	place:widget/ordererror/error.inline.less	0
@@ -194,38 +194,38 @@ place_sync_css
 	place:widget/toplist/toplist.inline.less	0
 	place:widget/tosearch/tosearch.inline.less	0
 place_sync_js
-	place:widget/placelist/placelist.js	240695
-	place:widget/captain/captain.js	220083
-	place:widget/tosearch/tosearch.js	187784
-	place:widget/selectbox/selectbox.js	187519
-	place:widget/listtool/listtool.js	187519
-	place:widget/commentbtn/commentbtn.js	180877
-	place:widget/telephone/telephone.js	176505
-	place:widget/toplist/toplist.js	52884
-	place:widget/recommend/recommend.js	52884
-	place:widget/datepicker/datepicker.js	26613
-	place:widget/thirdsrcota/thirdsrcota.js	26613
-	place:static/js/broadcastname.js	26613
-	place:widget/hotelbook/hotelbook.js	26613
-	place:widget/bookphone/bookphone.js	25457
-	place:static/lib/template.js	23326
-	place:widget/movienews/movienews.js	23326
-	place:widget/movielist/movielist.js	17401
-	place:widget/gotomovie/gotomovie.js	12029
-	place:widget/scopebook/scopebook.js	6286
-	place:widget/thirdcomment/thirdcomment.js	4255
-	place:widget/selectlist/selectlist.js	2725
-	place:widget/icomment/icomment.js	198
-	place:widget/takeoutlist/takeoutlist.js	175
-	place:widget/bdcomment/bdcomment.js	117
-	place:widget/groupon/groupon.js	53
-	place:widget/premium/premium.js	53
-	place:widget/dishcategory/dishcategory.js	21
-	place:static/lib/mapresize.js	21
-	place:widget/takeoutdetailnav/takeoutdetailnav.js	21
-	place:static/js/vcode.js	17
-	place:widget/order/order.js	17
+	place:widget/movielist/movielist.js	0
+	place:static/js/broadcastname.js	0
+	place:static/lib/mapresize.js	0
+	place:static/lib/template.js	0
 	place:static/lib/underscore.js	0
+	place:widget/bdcomment/bdcomment.js	0
+	place:widget/bookphone/bookphone.js	0
+	place:widget/captain/captain.js	0
+	place:widget/commentbtn/commentbtn.js	0
+	place:widget/datepicker/datepicker.js	0
+	place:widget/dishcategory/dishcategory.js	0
+	place:widget/gotomovie/gotomovie.js	0
+	place:widget/groupon/groupon.js	0
+	place:widget/hotelbook/hotelbook.js	0
+	place:widget/icomment/icomment.js	0
+	place:widget/listtool/listtool.js	0
+	place:static/js/vcode.js	0
+	place:widget/movienews/movienews.js	0
+	place:widget/order/order.js	0
+	place:widget/placelist/placelist.js	0
+	place:widget/premium/premium.js	0
+	place:widget/recommend/recommend.js	0
+	place:widget/scopebook/scopebook.js	0
+	place:widget/selectbox/selectbox.js	0
+	place:widget/selectlist/selectlist.js	0
+	place:widget/takeoutdetailnav/takeoutdetailnav.js	0
+	place:widget/takeoutlist/takeoutlist.js	0
+	place:widget/telephone/telephone.js	0
+	place:widget/thirdcomment/thirdcomment.js	0
+	place:widget/thirdsrcota/thirdsrcota.js	0
+	place:widget/toplist/toplist.js	0
+	place:widget/tosearch/tosearch.js	0
 taxi_sync_css
 	taxi:widget/common/radar/radar.inline.less	0
 	taxi:static/css/base.inline.less	0
@@ -322,18 +322,18 @@ transit_sync_css
 	transit:widget/title/title.inline.less	0
 	transit:widget/trainstation/trainstation.inline.less	0
 transit_sync_js
-	transit:widget/list/list.js	91096
-	transit:widget/crosslist/crosslist.js	7586
-	transit:widget/crossdetail/crossdetail.js	291
+	transit:widget/crossdetail/crossdetail.js	0
+	transit:widget/crosslist/crosslist.js	0
+	transit:widget/list/list.js	0
 user_sync_js
-	user:widget/mycenter/mycenter.js	14
-	user:widget/score/score.js	2
 	user:widget/exchange/exchange.js	0
+	user:widget/mycenter/mycenter.js	0
 	user:widget/rule/rule.js	0
+	user:widget/score/score.js	0
 user_sync_css
-	user:widget/mycenter/mycenter.less	14
-	user:widget/score/score.less	2
 	user:widget/exchange/exchange.less	0
+	user:widget/mycenter/mycenter.less	0
 	user:widget/rule/rule.less	0
+	user:widget/score/score.less	0
 walk_sync_css
 	walk:widget/list/list.inline.less	0
