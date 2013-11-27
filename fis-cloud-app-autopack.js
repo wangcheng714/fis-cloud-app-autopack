@@ -3,6 +3,7 @@ var File = require("./lib/file.js"),
     Record = require("./lib/record.js"),
     //packager = require("./lib/pvPackager.js"),
     packager = require("./lib/profitPackager.js"),
+    JsonUtil = require("./lib/jsonUtil.js"),
     fs = require("fs"),
     request = require("request");
 
@@ -15,31 +16,6 @@ var depsTable = {},
 var fis = require("C:/Users/wangcheng/AppData/Roaming/npm/node_modules/fis-cloud/node_modules/fis-cloud-kernel/fis-cloud-kernel.js");
 
 
-function getDeps(req, res, app){
-   var file = "common:widget/geolocation/geolocation.js";
-
-
-   var dir = "C:/Users/wangcheng/AppData/Roaming/npm/node_modules/fis-cloud/node_modules/fis-cloud-kernel/node_modules/fis-cloud-app-autopack/svn_code/map-batman/output",
-       configDir = dir + "/config";
-
-   var configReg = /\w+\-map\.json$/,
-       configFiles = fis.util.find(configDir, configReg),
-       configRes = {},
-       files = [];
-
-   for(var i =0; i<configFiles.length; i++){
-       var config = fis.util.readJSON(configFiles[i]),
-       tmpRes = config["res"];
-       configRes = fis.util.merge(configRes, tmpRes);
-   }
-
-   var result = _getDeps(file, "deps", configRes);
-   console.log(result);
-
-   //res.json(result);
-}
-
-module.exports.getDeps = getDeps;
 
 function mergeDeps(deps1, deps2){
     if(deps1["deps"] || deps2["deps"]){
@@ -231,11 +207,29 @@ function processLogData(data){
     return records;
 }
 
-//todo ： 获取svn地址，进行build等工作
+function printUrlPvs(records){
+    var urlPvs = [],
+        urlStrs = "",
+        infoFile = __dirname + "/test/map-info.txt";
+    fis.util.map(records, function(index, record){
+        urlPvs.push({
+            "url" : record.get("url"),
+            "pv" : record.get("pv")
+        });
+    });
+    urlPvs.sort(function(recordA, recordB){
+        return recordB["pv"] - recordA["pv"];
+    });
+    fis.util.map(urlPvs, function(index, record){
+        urlStrs += "\n" + record["url"] + "\t" + record["pv"];
+    });
+    fis.util.write(infoFile, urlStrs);
+}
 
 function build(dir){
     resources = getResource(dir);
     getLogData(function(error, records){
+        printUrlPvs(records);
         for(var i=0; i<records.length; i++){
             var record = records[i],
                 syncStatics = record.get("sync"),
@@ -258,9 +252,46 @@ function build(dir){
             }
         }
         createCsvFile(resources, records);
-        packager.package(resources);
+
+        var packageResults = packager.package(resources);
+        createPackConf(packageResults);
+    });
+}
+
+/**
+ * @param resources
+ *  数据结构 ：
+ *      {"common_asnyc_js" : [pkg1,pkg2]}
+ */
+function createPackConf(resources){
+    var packResults = {};
+
+    fis.util.map(resources, function(packageKeyPrefix, packages){
+        var tokens = packageKeyPrefix.split("_"),
+            module = tokens[0],
+            type = tokens[2];
+        if(!packResults[module]){
+            packResults[module] = {};
+        }
+        fis.util.map(packages, function(index, pkgFile){
+            var files = pkgFile.get("mergedStatic"),
+                packageKey = "pkg/" + packageKeyPrefix + "_" + index + "." + type;
+
+            packResults[module][packageKey] = [];
+
+            fis.util.map(files, function(index, file){
+                packResults[module][packageKey].push(file.replace(/\w+:/, "/"));
+            });
+
+        })
     });
 
+    fis.util.map(packResults, function(module, packResult){
+        var packStr = JsonUtil.convertToString(packResult),
+            fileName = __dirname + "/test/pack/" + module + "/" + "fis-pack.json";
+
+        fis.util.write(fileName, packStr);
+    });
 }
 
 function createCsvFile(resources, records){
@@ -291,9 +322,7 @@ function createCsvFile(resources, records){
             csvBody += "\n";
         }
     }
-
     fis.util.write(file, csvHeader + "\n" + csvBody);
-
 }
 
 module.exports.build = build;
