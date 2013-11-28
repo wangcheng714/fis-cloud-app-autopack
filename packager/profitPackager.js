@@ -5,7 +5,7 @@
  *
  */
 var benefitMap = {},
-    packageUtil = require("./util.js");
+    packageUtil = require("../lib/util.js");
 
 var RTT = 2,  //round trip time 不能包含建立tcp链接的时间，因为http 1.1都是用了 keep-alive 没有tcp建立的开销
     SPEED = 20,

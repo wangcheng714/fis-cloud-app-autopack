@@ -1,11 +1,13 @@
 //todo : download shell copy old version
 var File = require("./lib/file.js"),
     Record = require("./lib/record.js"),
-    //packager = require("./lib/pvPackager.js"),
-    packager = require("./lib/profitPackager.js"),
+    packager = require("./packager/profitPackager.js"),
+    packageUtil = require("./lib/util.js");
     JsonUtil = require("./lib/jsonUtil.js"),
     fs = require("fs"),
-    request = require("request");
+    request = require("request"),
+    AdmZip = require('adm-zip'),
+    zip = new AdmZip();
 
 var depsTable = {},
     handleingDeps = {},
@@ -26,22 +28,6 @@ function mergeDeps(deps1, deps2){
     }
     return deps1;
 }
-
-//todo ： 替换使用util中的unique函数
-function unique(arr) {
-    var ret = [];
-    var hash = {};
-    for (var i = 0; i < arr.length; i++) {
-        var item = arr[i];
-        var key = typeof(item) + item;
-        if (hash[key] !== 1) {
-            ret.push(item);
-            hash[key] = 1;
-        }
-    }
-    return ret;
-}
-
 
 function _getDeps(file, filetype, files){
     var deps = {};
@@ -83,10 +69,10 @@ function _getDeps(file, filetype, files){
             }
         }
         if(deps["deps"]){
-            deps["deps"] = unique(deps["deps"]);
+            deps["deps"] =  packageUtil.array_unique(deps["deps"]);
         }
         if(deps["async"]){
-            deps["async"] = unique(deps["async"]);
+            deps["async"] = packageUtil.array_unique(deps["async"]);
         }
         depsTable[file] = deps;
         handleingDeps[file] = false;
@@ -175,16 +161,11 @@ function getLogData(callback){
     });
 }
 
-//todo : 转移到util.js中
-function trim(str){
-    return str.replace(/^\s+/, '').replace(/\s+$/, '');
-}
-
 function processLogData(data){
     var lines = data.split(/\n|\r\n/),
         records = [];
     for(var i=0; i<lines.length; i++){
-        if(trim(lines[i]) != ""){
+        if(packageUtil.trim(lines[i]) != ""){
             var urlTokens = lines[i].split(/\s+|\t/),
                 statics = urlTokens[2].split(/,/),
                 syncDepsRes = [],
@@ -201,7 +182,7 @@ function processLogData(data){
                     }
                 }
             }
-            records.push(new Record(urlTokens[1], unique(syncDepsRes), unique(asyncDepsRes), urlTokens[3], urlTokens[4]));
+            records.push(new Record(urlTokens[1], packageUtil.array_unique(syncDepsRes), packageUtil.array_unique(asyncDepsRes), urlTokens[3], urlTokens[4]));
         }
     }
     return records;
@@ -288,10 +269,14 @@ function createPackConf(resources){
 
     fis.util.map(packResults, function(module, packResult){
         var packStr = JsonUtil.convertToString(packResult),
-            fileName = __dirname + "/test/pack/" + module + "/" + "fis-pack.json";
-
-        fis.util.write(fileName, packStr);
+            //fileName = __dirname + "/test/pack/" + module + "/" + "fis-pack.json";
+            fileName = module + "/" + "fis-pack.json";
+        zip.addFile(fileName, new Buffer(packStr));
     });
+
+    //todo : 路径正式化
+    var zipFile = __dirname + "/test/pack/map.zip";
+    zip.writeZip(zipFile);
 }
 
 function createCsvFile(resources, records){
