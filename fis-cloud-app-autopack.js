@@ -2,7 +2,7 @@
 var File = require("./lib/file.js"),
     Record = require("./lib/record.js"),
     packager = require("./packager/profitPackager.js"),
-    packageUtil = require("./lib/util.js");
+    packageUtil = require("./lib/util.js"),
     JsonUtil = require("./lib/jsonUtil.js"),
     fs = require("fs"),
     request = require("request"),
@@ -13,11 +13,6 @@ var depsTable = {},
     handleingDeps = {},
     hashTable = {},
     resources = {};
-
-//todo 正式版本去除到
-var fis = require("C:/Users/wangcheng/AppData/Roaming/npm/node_modules/fis-cloud/node_modules/fis-cloud-kernel/fis-cloud-kernel.js");
-
-
 
 function mergeDeps(deps1, deps2){
     if(deps1["deps"] || deps2["deps"]){

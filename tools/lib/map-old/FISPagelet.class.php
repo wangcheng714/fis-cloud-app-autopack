@@ -64,6 +64,7 @@ class FISPagelet {
     //auto package
     static private $sampleRate = 1;
     static private $fid;
+    static private $pageName = "";
     static private $usedStatics = array();
 
     static public function addHashTable($strId, $smarty){
@@ -286,13 +287,14 @@ class FISPagelet {
     	$sampleRate = self::getSampleRate();
     	if(self::isSample($sampleRate)){
     		$fid = self::getFid();
+            $pageName = self::getPageName();
 	    	if (!empty(self::$usedStatics)) {
 	            $timeStamp = time();
 	            $hashStr = '';
 	            self::$usedStatics= array_filter(array_unique(self::$usedStatics));
 	            $tmpStr = implode(',', self::$usedStatics);
 				$hashStr .= $tmpStr;
-				$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . '&sid=' . $timeStamp . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
+				$code .= '(new Image()).src="http://nsclick.baidu.com/u.gif?pid=242&v=1&data=' . $tmpStr . "&page=" . $pageName . '&sid=' . $timeStamp . '&hash=<STATIC_HASH>' . '&fid=' . $fid . '";';
 	            $code = str_replace("<STATIC_HASH>", substr(md5($hashStr), 0, 10), $code);
 	        }
     	}
@@ -313,6 +315,14 @@ class FISPagelet {
 
     static public function getSampleRate(){
     	return self::$sampleRate;
+    }
+
+    static public function getPageName(){
+     	return self::$pageName;
+    }
+
+    static public function setPageName($page){
+        self::$pageName = $page;
     }
 
     /**
