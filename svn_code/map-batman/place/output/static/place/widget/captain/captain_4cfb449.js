@@ -1,1 +1,0 @@
-define("place:widget/captain/captain.js",function(){$(".place-widget-captain")});
