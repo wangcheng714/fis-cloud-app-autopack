@@ -4,7 +4,9 @@
   "description": "fis-cloud-app-autopack",
   "main": "fis-cloud-app-autopack.js",
   "dependencies": {
-    "request" : "2.27.0"
+    "ejs": "*",
+    "request" : "*",
+    "fis-auto-packager" : "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>自动打包app</title>
+        <link rel="stylesheet" type="text/css" href="/static/autopack/css/pure-min.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/autopack/css/package.css"/>
+    </head>
+    <body>
+        <div class="form-div">
+            <table class="pure-table pure-table-bordered">
+                <thead>
+                    <tr>
+                        <th>文件名</th>
+                        <th>描述</th>
+                        <th>下载地址</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for(var key in files){ %>
+                        <tr class="pure-table-odd">
+                            <td><%= key%></td>
+                            <td><%= descs[key]%></td>
+                            <td><a href="/autopack/download?file=<%= files[key]%>">点击下载</a></td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

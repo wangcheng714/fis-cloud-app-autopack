@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+        <title>自动打包app</title>
+        <link rel="stylesheet" type="text/css" href="/static/autopack/css/pure-min.css"/>
+        <link rel="stylesheet" type="text/css" href="/static/autopack/css/package.css"/>
+    </head>
+    <body>
+        <div class="form-div">
+            <form class="pure-form pure-form-aligned" action="/autopack" method="post">
+                <fieldset>
+                    <div class="pure-control-group">
+                        <label for="svn">Svn地址</label>
+                        <input id="svn" name="svn" type="text" placeholder="Svn地址" required>
+                    </div>
+
+                    <div class="pure-control-group">
+                        <label for="project">产品线项目</label>
+                        <input id="project" name="project" type="text" placeholder="产品线项目(英文)">
+                    </div>
+
+                    <div class="pure-controls">
+                        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </body>
+</html>
