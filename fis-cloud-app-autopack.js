@@ -29,7 +29,7 @@ function buildProject(svn, project, callback){
         if(error){
             callback(error, null); 
         }else{
-            var shFile = source + "auto-package.sh",
+            var shFile = source + "auto-pack.sh",
                 buildCmd = "sh " + shFile;
             if(fis.util.exists(shFile)){
                 var options = {
@@ -47,7 +47,6 @@ function buildProject(svn, project, callback){
 }
 
 //todo : 是否需要添加时间戳
-
 module.exports = function(req, res, app){
     initViews(app);
     if(req.method == "GET"){

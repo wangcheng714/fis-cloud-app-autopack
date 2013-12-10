@@ -1,0 +1,5 @@
+auto-pack需要注意事项 :
+
+   1. 不能添加domain参数
+   2. 直接编译不能打包
+   3. 需要产出fis-autopack.json文件到根目录
