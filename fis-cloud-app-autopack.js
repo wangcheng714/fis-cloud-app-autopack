@@ -1,4 +1,5 @@
 var autoPackager = require("fis-auto-packager"),
+    async = require("async"),
     exec = require("child_process").exec;
 
 var svnSource = __dirname + "/svn_source/",
@@ -12,22 +13,10 @@ function initViews(app){
     app.set('view engine', 'html');
 }
 
-function downloadSvn(svn, project, callback){
-    var source = svnSource + project + "/",
-        downloadCmd = "svn co " + svn + " " + source + " --non-interactive --trust-server-cert --username " + username + " --password " + password;
-
-    if(fis.util.exists(source)){
-        fis.util.del(source);
-    }
-    exec(downloadCmd, function(error, stdout, stderr){
-        callback(stderr, source); 
-    });
-}
-
-function buildProject(svn, project, callback){
-    downloadSvn(svn, project, function(error, source){
+function buildProject(svns, project, callback){
+    analyzeSvns(svns, project, function(error, source){
         if(error){
-            callback(error, null); 
+            callback(error);
         }else{
             var shFile = source + "auto-pack.sh",
                 buildCmd = "sh " + shFile;
@@ -47,15 +36,91 @@ function buildProject(svn, project, callback){
 }
 
 //todo : 是否需要添加时间戳
+//
+function downloadSvn(svn, project, downloadDir, callback){
+    var source = "";
+    if(downloadDir){    
+        source = downloadDir;
+    }else{
+        source = svnSource + project + "/";
+    }
+    var downloadCmd = "svn co " + svn + " " + source + " --non-interactive --trust-server-cert --username " + username + " --password " + password;
+
+    if(fis.util.exists(source)){
+        fis.util.del(source);
+    }
+    exec(downloadCmd, function(error, stdout, stderr){
+        callback(stderr, source); 
+    });
+}
+
+
+var svn_num = 4;
+
+function analyzeSvns(svns, project, callback){
+    var svn = svns[0],
+        tmptrunk = svn.replace(/branches/, "trunk"),
+        tokens = tmptrunk.split("/");
+
+    tokens.splice(tokens.length -2, 2);
+
+    var trunkSvn = tokens.join("/"),
+        modules = {};
+
+    for(var i=0; i<svns.length; i++){
+        var svn = svns[i],
+            svnTokens = svn.split("/"),
+            namespace = svnTokens[svnTokens.length - 2];
+        modules[namespace] = svn;
+    }
+
+    downloadSvn(trunkSvn, project, null, function(error, source){
+        var moduleDirs = [],
+            downloadSvns = [];
+        fis.util.map(modules, function(module, svn){
+            var moduleDir = source + module;
+            if(fis.util.exists(moduleDir)){
+                moduleDirs.push(moduleDir);
+                downloadSvns.push(svn);
+                fis.util.del(moduleDir);
+            }else{
+                //todo
+                console.log("do not find the svn module");
+            }
+        });
+        var count = 0;
+        async.whilst(
+            function(){
+                return count < moduleDirs.length;
+            },
+            function(callback){
+                downloadSvn(downloadSvns[count], null, moduleDirs[count], callback);
+                count++;
+            },
+            function(error){
+                callback(error, source);
+            }
+        );
+    });
+}
+
+//todo : 1. 添加各种容错处理
+//todo : 2. 通用性考虑，后续和持续集成app或者icafe结合
 module.exports = function(req, res, app){
     initViews(app);
     if(req.method == "GET"){
         res.render("package");
     }else if(req.method == "POST"){
-        var svn = req.param("svn"),
+        var svns = [],
             project = req.param("project");
+        for(var i=1; i<=svn_num; i++){
+            var svn = req.param("svn" + i);
+            if(svn){
+                svns.push(svn);
+            }
+        }
 
-        buildProject(svn, project, function(error, outputDir){
+        buildProject(svns, project, function(error, outputDir){
             if(error){
                 res.send(500, error);
             }else{

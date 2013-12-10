@@ -6,21 +6,31 @@
         <link rel="stylesheet" type="text/css" href="/static/autopack/css/package.css"/>
     </head>
     <body>
-        <div class="form-div">
+        <div id="form-div">
             <form class="pure-form pure-form-aligned" action="/autopack" method="post">
                 <fieldset>
-                    <div class="pure-control-group">
-                        <label for="svn">Svn地址</label>
-                        <input id="svn" name="svn" type="text" placeholder="Svn地址" required>
-                    </div>
-
                     <div class="pure-control-group">
                         <label for="project">产品线项目</label>
                         <input id="project" name="project" type="text" placeholder="产品线项目(英文)">
                     </div>
-
+                    <div class="pure-control-group">
+                        <label for="svn1">Svn分支地址</label>
+                        <input id="svn1" name="svn1" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="svn2">Svn分支地址</label>
+                        <input id="svn2" name="svn2" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="svn3">Svn分支地址</label>
+                        <input id="svn3" name="svn3" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group">
+                        <label for="svn4">Svn分支地址</label>
+                        <input id="svn4" name="svn4" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
                     <div class="pure-controls">
-                        <button type="submit" class="pure-button pure-button-primary">Submit</button>
+                        <button type="submit" class="pure-button pure-button-primary">打包</button>
                     </div>
                 </fieldset>
             </form>
