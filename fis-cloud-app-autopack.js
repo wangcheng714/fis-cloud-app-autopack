@@ -1,3 +1,4 @@
+//todo : 记录打包中的各个过程
 var autoPackager = require("fis-auto-packager"),
     async = require("async"),
     exec = require("child_process").exec;
@@ -14,7 +15,7 @@ function initViews(app){
 }
 
 function buildProject(svns, project, callback){
-    analyzeSvns(svns, project, function(error, source){
+    analyzeSvns(svns, project, function(error, source, modules){
         if(error){
             callback(error);
         }else{
@@ -26,7 +27,7 @@ function buildProject(svns, project, callback){
                 };
                 exec(buildCmd, options, function(error, stdout, stderr){
                     var outputDir = source + "output/";
-                    callback(stderr, outputDir);                
+                    callback(stderr, outputDir, modules);
                 }); 
             }else{
                 callback(shFile + " not exist!", null);
@@ -65,13 +66,15 @@ function analyzeSvns(svns, project, callback){
     tokens.splice(tokens.length -2, 2);
 
     var trunkSvn = tokens.join("/"),
-        modules = {};
+        modules = {},
+        packageModules = [];
 
     for(var i=0; i<svns.length; i++){
         var svn = svns[i],
             svnTokens = svn.split("/"),
             namespace = svnTokens[svnTokens.length - 2];
         modules[namespace] = svn;
+        packageModules.push(namespace);
     }
 
     downloadSvn(trunkSvn, project, null, function(error, source){
@@ -98,7 +101,7 @@ function analyzeSvns(svns, project, callback){
                 count++;
             },
             function(error){
-                callback(error, source);
+                callback(error, source, packageModules);
             }
         );
     });
@@ -120,7 +123,7 @@ module.exports = function(req, res, app){
             }
         }
 
-        buildProject(svns, project, function(error, outputDir){
+        buildProject(svns, project, function(error, outputDir, modules){
             if(error){
                 res.send(500, error);
             }else{
@@ -132,7 +135,7 @@ module.exports = function(req, res, app){
                 };
                 //todo : 测试阶段添加特殊url后续会删除
                 var url = "http://wangcheng.fe.baidu.com/Fis_Static_Count.201311160000";
-                autoPackager.package(outputDir, resultDir, project, url, function(error, result){
+                autoPackager.package(outputDir, resultDir, project, modules, url, function(error, result){
                     res.render("result", {
                         "descs" : descriptions,
                         "files" : result
