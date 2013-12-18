@@ -13,27 +13,51 @@
                         <label for="project">产品线项目</label>
                         <input id="project" name="project" type="text" placeholder="产品线项目(英文)">
                     </div>
-                    <div class="pure-control-group">
-                        <label for="svn1">Svn分支地址</label>
-                        <input id="svn1" name="svn1" type="text" placeholder="需上线模块Svn分支地址">
+                    <div class="pure-control-group" id="svn1">
+                        <label>Svn分支地址</label>
+                        <input name="svn1" type="text" placeholder="需上线模块Svn分支地址">
                     </div>
-                    <div class="pure-control-group">
-                        <label for="svn2">Svn分支地址</label>
-                        <input id="svn2" name="svn2" type="text" placeholder="需上线模块Svn分支地址">
+                    <div class="pure-control-group" id="svn2">
+                        <label>Svn分支地址</label>
+                        <input name="svn2" type="text" placeholder="需上线模块Svn分支地址">
                     </div>
-                    <div class="pure-control-group">
-                        <label for="svn3">Svn分支地址</label>
-                        <input id="svn3" name="svn3" type="text" placeholder="需上线模块Svn分支地址">
+                    <div class="pure-control-group" id="svn3">
+                        <label>Svn分支地址</label>
+                        <input name="svn3" type="text" placeholder="需上线模块Svn分支地址">
                     </div>
-                    <div class="pure-control-group">
-                        <label for="svn4">Svn分支地址</label>
-                        <input id="svn4" name="svn4" type="text" placeholder="需上线模块Svn分支地址">
+                    <div class="pure-control-group" id="svn4">
+                        <label>Svn分支地址</label>
+                        <input name="svn4" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group" id="svn5">
+                        <label>Svn分支地址</label>
+                        <input name="svn5" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group" id="svn6">
+                        <label>Svn分支地址</label>
+                        <input name="svn6" type="text" placeholder="需上线模块Svn分支地址">
+                    </div>
+                    <div class="pure-control-group" id="svn7">
+                        <label>Svn分支地址</label>
+                        <input name="svn7" type="text" placeholder="需上线模块Svn分支地址">
                     </div>
                     <div class="pure-controls">
                         <button type="submit" class="pure-button pure-button-primary">打包</button>
+                        <button type="button" id="addSvn" class="pure-button pure-button-primary">添加SVN</button>
                     </div>
                 </fieldset>
             </form>
         </div>
+		<script type="text/javascript" src="/static/autopack/js/jquery.js"></script>
+		<script type="text/javascript">
+			var idCount = 8;
+			$("#addSvn").on("click", function(){
+					var str = "<div class=\"pure-control-group\" id=\"svn" + idCount +"\"><label>Svn分支地址</label>";
+					str += "<input name=\"svn" + idCount + "\" type=\"text\" placeholder=\"需上线模块Svn分支地址\">";
+					str += "</div>";
+				$(str).insertAfter("#svn" + (idCount-1));
+				idCount++;
+			});
+		</script>
     </body>
 </html>
