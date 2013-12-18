@@ -36,16 +36,16 @@ function buildProject(svns, project, callback){
     });
 }
 
-//todo : 是否需要添加时间戳
-//
 function downloadSvn(svn, project, downloadDir, callback){
     var source = "";
     if(downloadDir){    
         source = downloadDir;
     }else{
-        source = svnSource + project + "/";
+        source = svnSource + project + "_" + getTimeStamp() + "/";
+        //source = svnSource + project + "/";
     }
     var downloadCmd = "svn co " + svn + " " + source + " --non-interactive --trust-server-cert --username " + username + " --password " + password;
+
 
     if(fis.util.exists(source)){
         fis.util.del(source);
@@ -55,8 +55,14 @@ function downloadSvn(svn, project, downloadDir, callback){
     });
 }
 
+//不添加年和月避免路径过长，linux下 svn co失败
+function getTimeStamp(){
+	var date = new Date();
+	return "" + date.getDate() + date.getHours() + date.getMinutes() + date.getSeconds() + date.getMilliseconds();
+}
 
-var svn_num = 4;
+
+var svn_num = 15;
 
 function analyzeSvns(svns, project, callback){
     var svn = svns[0],
