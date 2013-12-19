@@ -121,7 +121,8 @@ module.exports = function(req, res, app){
         res.render("package");
     }else if(req.method == "POST"){
         var svns = [],
-            project = req.param("project");
+            project = req.param("project"),
+            staticType = req.param("staticType");
         for(var i=1; i<=svn_num; i++){
             var svn = req.param("svn" + i);
             if(svn){
@@ -141,7 +142,22 @@ module.exports = function(req, res, app){
                 };
                 //todo : 测试阶段添加特殊url后续会删除
                 var url = "http://wangcheng.fe.baidu.com/Fis_Static_Count.201311160000";
-                autoPackager.package(outputDir, resultDir, project, modules, url, function(error, result){
+                //选择需要打包的静态资源类型
+                switch (staticType){
+                    case "js" :
+                        staticType = ["js"];
+                        break;
+                    case "css" :
+                        staticType = ["css"];
+                        break;
+                    case "all":
+                        staticType = ["js", "css"];
+                        break;
+                    default :
+                        staticType = ["js", "css"];
+                        break;
+                }
+                autoPackager.package(outputDir, resultDir, project, modules, staticType, url, function(error, result){
                     res.render("result", {
                         "descs" : descriptions,
                         "files" : result

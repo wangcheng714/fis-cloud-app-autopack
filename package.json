@@ -1,6 +1,6 @@
 {
   "name": "fis-cloud-app-autopack",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "fis-cloud-app-autopack",
   "main": "fis-cloud-app-autopack.js",
   "dependencies": {
