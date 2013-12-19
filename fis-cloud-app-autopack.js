@@ -141,7 +141,7 @@ module.exports = function(req, res, app){
                     "packageConf" : "打包配置文件"
                 };
                 //todo : 测试阶段添加特殊url后续会删除
-                var url = "http://wangcheng.fe.baidu.com/Fis_Static_Count.201311160000";
+                var url = "http://wangcheng.fe.baidu.com/Fis_Static_Count.201312130000";
                 //选择需要打包的静态资源类型
                 switch (staticType){
                     case "js" :
