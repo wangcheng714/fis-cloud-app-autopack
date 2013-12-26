@@ -1,4 +1,3 @@
-//todo : 记录打包中的各个过程
 var autoPackager = require("fis-auto-packager"),
     async = require("async"),
     exec = require("child_process").exec;
@@ -114,7 +113,6 @@ function analyzeSvns(svns, project, callback){
 }
 
 //todo : 1. 添加各种容错处理
-//todo : 2. 通用性考虑，后续和持续集成app或者icafe结合
 module.exports = function(req, res, app){
     initViews(app);
     if(req.method == "GET"){
